@@ -27,3 +27,5 @@ spec:
         - "/argocd/*"
         - "/orion/version"
         - "/quantumleap/version"
+        - "/da"
+        - "/kiali"
