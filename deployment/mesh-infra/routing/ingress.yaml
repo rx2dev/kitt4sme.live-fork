@@ -12,6 +12,17 @@ spec:
       name: http
       number: 80
       protocol: HTTP
+    tls:
+      httpsRedirect: false # set to true if you want to force the redirection to HTTPS
+  - hosts:
+    - "*"
+    port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: k4s-tls
 
 ---
 
@@ -57,6 +68,16 @@ spec:
         host: keycloak.default.svc.cluster.local
         port:
           number: 8080
+  - match:
+    - uri:
+        prefix: /da
+    - uri:
+        prefix: /da/
+    route:
+    - destination:
+        host: aiqusda-service.default.svc.cluster.local
+        port:
+          number: 8000
   - match:  # NOTE (1)
     - uri:
         prefix: /argocd/
@@ -69,6 +90,19 @@ spec:
         host: argocd-server.argocd.svc.cluster.local
         port:
           number: 80
+  - match:  # NOTE (1)
+    - uri:
+        prefix: /kiali/
+    - uri:
+        prefix: /kiali
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: kiali.istio-system.svc.cluster.local
+        port:
+          number: 20001
+
 
 # NOTE
 # 1. URL rewriting. We use overlapping prefixes to make sure `/x`, `/x/`
